@@ -117,16 +117,19 @@ def get_data():
 
 
 def export():
-    folder_name = askdirectory()
-    file_name = datetime.now().strftime("%d/%m/%Y %H:%M:%S").replace("/", ".").replace(":", ".")
-    export_name = f"{folder_name}/{file_name}.json"
+    confirm = messagebox.askyesno(title="Confirm", message="Are you sure you want to export")
+    print(confirm)
+    if confirm:
+        folder_name = askdirectory()
+        file_name = datetime.now().strftime("%d/%m/%Y %H:%M:%S").replace("/", ".").replace(":", ".")
+        export_name = f"{folder_name}/{file_name}.json"
 
-    if folder_name:
-        with open("data.json") as file:
-            data = json.load(file)
-        with open(export_name, mode="w") as file:
-            json.dump(data, file, indent=4)
-            messagebox.showinfo(title="Success", message="Export Complete")
+        if folder_name:
+            with open("data.json") as file:
+                data = json.load(file)
+            with open(export_name, mode="w") as file:
+                json.dump(data, file, indent=4)
+                messagebox.showinfo(title="Success", message="Export Complete")
 
 # ---------------------------- UI SETUP ------------------------------- #
 
