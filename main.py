@@ -121,7 +121,7 @@ def export():
     file_name = datetime.now().strftime("%d/%m/%Y %H:%M:%S").replace("/", ".").replace(":", ".")
     export_name = f"{folder_name}/{file_name}.json"
 
-    if file_name:
+    if folder_name:
         with open("data.json") as file:
             data = json.load(file)
         with open(export_name, mode="w") as file:
