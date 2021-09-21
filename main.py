@@ -1,6 +1,6 @@
 from tkinter import *
 from tkinter import messagebox
-from tkinter.filedialog import askdirectory
+from tkinter.filedialog import askdirectory, askopenfilename
 from random import choice, randint, shuffle
 import pyperclip
 import json
@@ -131,6 +131,21 @@ def export():
                 json.dump(data, file, indent=4)
                 messagebox.showinfo(title="Success", message="Export Complete")
 
+# ---------------------------- IMPORT DATA ------------------------------- #
+
+
+def import_data():
+
+    res = messagebox.askokcancel(title="Confirm", message="This action will overwrite all previous data")
+    if res:
+        print("ok")
+        file_name = askopenfilename(title="Select Import File", filetypes=[("json files", '*.json')])
+        if file_name:
+            with open(file_name) as file:
+                data = json.load(file)
+            with open("data.json", mode="w") as file:
+                json.dump(data, file)
+                messagebox.showinfo(title="Success...", message="Import complete")
 # ---------------------------- UI SETUP ------------------------------- #
 
 
@@ -173,8 +188,11 @@ search_btn.grid(column=2, row=1, sticky="EW", padx=(4, 0), pady=2)
 add_btn = Button(text="Add", width=35, cursor="hand2", command=append_data_to_file)
 add_btn.grid(column=1, row=4, columnspan=2, sticky="EW")
 
-export_btn = Button(text="Export", cursor="hand2", command=export)
+export_btn = Button(text="Export", cursor="hand2", command=export, width=8)
 export_btn.place(x=0, y=0)
+
+export_btn = Button(text="Import", cursor="hand2", command=import_data, width=8)
+export_btn.place(x=0, y=30)
 
 window.resizable(False, False)
 
