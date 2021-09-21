@@ -1,4 +1,5 @@
 from tkinter import *
+from tkinter import ttk
 from tkinter import messagebox
 from tkinter.filedialog import askdirectory, askopenfilename
 from random import choice, randint, shuffle
@@ -151,48 +152,97 @@ def import_data():
 
 window = Tk()
 window.title("Password Generator")
-window.config(padx=30, pady=30)
-window.option_add('*Dialog.msg.font', 'Helvetica 30')
+# window.config(padx=30, pady=30)
 
-canvas = Canvas(width=200, height=200)
+
+my_notebook = ttk.Notebook(window)
+my_notebook.grid(row=0, column=0, padx=20, pady=20)
+
+my_frame1 = Frame(my_notebook, padx=40, pady=40)
+my_frame1.grid(row=0, column=0, sticky="nsew")
+my_frame2 = Frame(my_notebook, padx=40, pady=40)
+my_frame2.grid(row=0, column=0, sticky="nsew")
+my_frame3 = Frame(my_notebook, padx=40, pady=40)
+my_frame3.grid(row=0, column=0, sticky="nsew")
+
+my_notebook.add(my_frame1, text="Add")
+my_notebook.add(my_frame2, text="Search")
+my_notebook.add(my_frame3, text="Import/export")
+
+# ---------------------------- Frame/TAB1/ADD ------------------------------- #
+canvas = Canvas(my_frame1, width=200, height=200)
 tomato_img = PhotoImage(file="logo.png")
 canvas.create_image(100, 100, image=tomato_img)
 canvas.grid(column=1, row=0)
 
-label_website = Label(text="Website:")
+label_website = Label(my_frame1, text="Website:")
 label_website.grid(column=0, row=1, sticky="E")
 
-entry_website = Entry()
+entry_website = Entry(my_frame1)
 entry_website.focus()
-entry_website.grid(column=1, row=1, sticky="EW")
+entry_website.grid(column=1, row=1, columnspan=2, sticky="EW")
 
-label_email_uname = Label(text="Email/Username:")
+label_email_uname = Label(my_frame1, text="Email/Username:")
 label_email_uname.grid(column=0, row=2, sticky="E")
 
-entry_email_uname = Entry()
+entry_email_uname = Entry(my_frame1)
 entry_email_uname.insert(0, "tommy_kelly@icloud.com")
 entry_email_uname.grid(column=1, row=2, columnspan=2, sticky="EW")
 
-label_password = Label(text="Password:")
+label_password = Label(my_frame1, text="Password:")
 label_password.grid(column=0, row=3, sticky="E")
 
-entry_password = Entry()
+entry_password = Entry(my_frame1)
 entry_password.grid(column=1, row=3, sticky="EW")
 
-generate_btn = Button(text="Generate Password", cursor="hand2", command=generate_password)
+generate_btn = Button(my_frame1, text="Generate Password", cursor="hand2", command=generate_password)
 generate_btn.grid(column=2, row=3, sticky="EW", padx=(4, 0), pady=2)
 
-search_btn = Button(text="Search", cursor="hand2", command=get_data)
-search_btn.grid(column=2, row=1, sticky="EW", padx=(4, 0), pady=2)
-
-add_btn = Button(text="Add", width=35, cursor="hand2", command=append_data_to_file)
+add_btn = Button(my_frame1, text="Add", width=35, cursor="hand2", command=append_data_to_file)
 add_btn.grid(column=1, row=4, columnspan=2, sticky="EW")
 
-export_btn = Button(text="Export", cursor="hand2", command=export, width=8)
-export_btn.place(x=0, y=0)
+# ---------------------------- Frame/TAB2/SEARCH ------------------------------- #
+canvas2 = Canvas(my_frame2, width=200, height=200)
+tomato_img2 = PhotoImage(file="logo.png")
+canvas2.create_image(100, 100, image=tomato_img)
+canvas2.grid(column=1, row=0)
 
-export_btn = Button(text="Import", cursor="hand2", command=import_data, width=8)
-export_btn.place(x=0, y=30)
+label_website = Label(my_frame2, text="Website:")
+label_website.grid(column=0, row=1, sticky="E")
+
+entry_website = Entry(my_frame2)
+entry_website.focus()
+entry_website.grid(column=1, row=1, columnspan=2, sticky="EW")
+
+label_email_uname = Label(my_frame2, text="Email/Username:")
+label_email_uname.grid(column=0, row=2, sticky="E")
+
+entry_email_uname = Entry(my_frame2)
+entry_email_uname.insert(0, "tommy_kelly@icloud.com")
+entry_email_uname.grid(column=1, row=2, columnspan=2, sticky="EW")
+
+label_password = Label(my_frame2, text="Password:")
+label_password.grid(column=0, row=3, sticky="E")
+
+entry_password = Entry(my_frame2)
+entry_password.grid(column=1, row=3, columnspan=2, sticky="EW")
+
+search_btn = Button(my_frame2, text="Search", cursor="hand2", command=get_data, width=44)
+search_btn.grid(column=1, row=4, sticky="EW", columnspan=2)
+
+# ---------------------------- Frame/TAB3/IMPORT/EXPORT ------------------------------- #
+
+canvas3 = Canvas(my_frame3, width=200, height=200)
+tomato_img3 = PhotoImage(file="logo.png")
+canvas3.create_image(100, 100, image=tomato_img)
+canvas3.place(x=95, y=1)
+
+
+export_btn = Button(my_frame3, text="Export", cursor="hand2", command=export, width=8)
+export_btn.grid(row=1, column=0, pady=10)
+
+import_btn = Button(my_frame3, text="Import", cursor="hand2", command=import_data, width=8)
+import_btn.grid(row=2, column=0)
 
 window.resizable(False, False)
 
