@@ -186,6 +186,7 @@ def import_data():
             with open("data.json", mode="w") as file:
                 json.dump(data, file)
                 messagebox.showinfo(title="Success...", message="Import complete")
+            load_list_box()
 
 
 def clear_search():
