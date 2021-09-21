@@ -9,6 +9,15 @@ from json.decoder import JSONDecodeError
 from datetime import datetime
 
 
+def load_list_box():
+    search_list.delete(0, END)
+    with open("data.json", mode="r") as file:
+        data = json.load(file)
+        for index, key in enumerate(data):
+            search_list.insert(index, key)
+            print(index)
+
+
 # ---------------------------- PASSWORD GENERATOR ------------------------------- #
 
 
@@ -86,33 +95,40 @@ def append_data_to_file():
                 entry_website.delete(0, END)
                 entry_password.delete(0, END)
                 entry_website.focus()
-
+                load_list_box()
         else:
             messagebox.showinfo(title="Canceled", message="Save canceled")
 # ---------------------------- GET DATA ------------------------------- #
 
 
 def get_data():
-    search_value = entry_website.get()
-    search_value_lower = entry_website.get().lower()
-    try:
-        with open("data.json", mode="r") as file:
-            data = json.load(file)
-            try:
-                conversion = {x.lower(): y for x, y in data.items()}
-                result = conversion[search_value_lower]
-            except KeyError:
-                messagebox.showerror("Not Found", message=f"{search_value} not found")
-            else:
-                email = result["email"]
-                password = result["password"]
-                entry_email_uname.delete(0, END)
-                entry_email_uname.insert(0, email)
-                entry_password.delete(0, END)
-                entry_password.insert(0, password)
-                pyperclip.copy(password)
-    except FileNotFoundError:
-        messagebox.showerror(title="Data file Err", message="Data file not found")
+    search_value = search_list.get(ANCHOR)
+    search_value_lower = search_list.get(ANCHOR).lower()
+
+    if search_value_lower == "":
+        messagebox.showinfo(title="Selection required...", message="Please from the list below")
+    else:
+        try:
+            with open("data.json", mode="r") as file:
+                data = json.load(file)
+                try:
+                    conversion = {x.lower(): y for x, y in data.items()}
+                    result = conversion[search_value_lower]
+                except KeyError:
+                    messagebox.showerror("Not Found", message=f"{search_value} not found")
+                else:
+
+                    email = result["email"]
+                    password = result["password"]
+                    entry_email_uname_search.delete(0, END)
+                    entry_email_uname_search.insert(0, email)
+                    entry_password_search.config(state='normal')
+                    entry_password_search.delete(0, END)
+                    entry_password_search.insert(0, password)
+                    pyperclip.copy(password)
+
+        except FileNotFoundError:
+            messagebox.showerror(title="Data file Err", message="Data file not found")
 
 # ---------------------------- EXPORT DATA ------------------------------- #
 
@@ -152,8 +168,6 @@ def import_data():
 
 window = Tk()
 window.title("Password Generator")
-# window.config(padx=30, pady=30)
-
 
 my_notebook = ttk.Notebook(window)
 my_notebook.grid(row=0, column=0, padx=20, pady=20)
@@ -167,13 +181,13 @@ my_frame3.grid(row=0, column=0, sticky="nsew")
 
 my_notebook.add(my_frame1, text="Add")
 my_notebook.add(my_frame2, text="Search")
-my_notebook.add(my_frame3, text="Import/export")
+my_notebook.add(my_frame3, text="Import/Export")
 
 # ---------------------------- Frame/TAB1/ADD ------------------------------- #
 canvas = Canvas(my_frame1, width=200, height=200)
-tomato_img = PhotoImage(file="logo.png")
-canvas.create_image(100, 100, image=tomato_img)
-canvas.grid(column=1, row=0)
+icon_img = PhotoImage(file="logo.png")
+canvas.create_image(100, 100, image=icon_img)
+canvas.grid(column=1, row=0, sticky="EW")
 
 label_website = Label(my_frame1, text="Website:")
 label_website.grid(column=0, row=1, sticky="E")
@@ -204,37 +218,47 @@ add_btn.grid(column=1, row=4, columnspan=2, sticky="EW")
 # ---------------------------- Frame/TAB2/SEARCH ------------------------------- #
 canvas2 = Canvas(my_frame2, width=200, height=200)
 tomato_img2 = PhotoImage(file="logo.png")
-canvas2.create_image(100, 100, image=tomato_img)
-canvas2.grid(column=1, row=0)
+canvas2.create_image(100, 100, image=icon_img)
+canvas2.grid(column=1, row=0, sticky="EW")
 
-label_website = Label(my_frame2, text="Website:")
-label_website.grid(column=0, row=1, sticky="E")
+label_website_search = Label(my_frame2, text="Website:")
+label_website_search.grid(column=0, row=1, sticky="E")
 
-entry_website = Entry(my_frame2)
-entry_website.focus()
-entry_website.grid(column=1, row=1, columnspan=2, sticky="EW")
+entry_website_search = Entry(my_frame2)
+entry_website_search.focus()
+entry_website_search.grid(column=1, row=1, columnspan=2, sticky="EW")
 
-label_email_uname = Label(my_frame2, text="Email/Username:")
-label_email_uname.grid(column=0, row=2, sticky="E")
+label_email_uname_search = Label(my_frame2, text="Email/Username:")
+label_email_uname_search.grid(column=0, row=2, sticky="E")
 
-entry_email_uname = Entry(my_frame2)
-entry_email_uname.insert(0, "tommy_kelly@icloud.com")
-entry_email_uname.grid(column=1, row=2, columnspan=2, sticky="EW")
+entry_email_uname_search = Entry(my_frame2)
+entry_email_uname_search.grid(column=1, row=2, columnspan=2, sticky="EW")
+entry_email_uname_search.bind("<Key>", lambda e: "break")
 
-label_password = Label(my_frame2, text="Password:")
-label_password.grid(column=0, row=3, sticky="E")
+label_password_search = Label(my_frame2, text="Password:")
+label_password_search.grid(column=0, row=3, sticky="E")
 
-entry_password = Entry(my_frame2)
-entry_password.grid(column=1, row=3, columnspan=2, sticky="EW")
+entry_password_search = Entry(my_frame2)
+entry_password_search.grid(column=1, row=3, columnspan=2, sticky="EW")
+entry_password_search.bind("<Key>", lambda e: "break")
 
 search_btn = Button(my_frame2, text="Search", cursor="hand2", command=get_data, width=44)
-search_btn.grid(column=1, row=4, sticky="EW", columnspan=2)
+search_btn.grid(column=1, row=4, sticky="EW", columnspan=2, pady=8)
+
+scrollbar = Scrollbar(my_frame2)
+scrollbar.grid(row=5, column=2, sticky="W")
+search_list = Listbox(my_frame2, height=4, selectmode=SINGLE, yscrollcommand=True)
+search_list.grid(row=5, column=1, sticky="EW")
+search_list.config(yscrollcommand=scrollbar.set)
+scrollbar.config(command=search_list.yview)
+
+load_list_box()
 
 # ---------------------------- Frame/TAB3/IMPORT/EXPORT ------------------------------- #
 
 canvas3 = Canvas(my_frame3, width=200, height=200)
 tomato_img3 = PhotoImage(file="logo.png")
-canvas3.create_image(100, 100, image=tomato_img)
+canvas3.create_image(100, 100, image=icon_img)
 canvas3.place(x=95, y=1)
 
 
