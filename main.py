@@ -11,11 +11,33 @@ from datetime import datetime
 
 def load_list_box():
     search_list.delete(0, END)
-    with open("data.json", mode="r") as file:
-        data = json.load(file)
+    search_list_del.delete(0, END)
+    try:
+        with open("data.json", mode="r") as file:
+            data = json.load(file)
+    except FileNotFoundError:
+        pass
+    else:
         for index, key in enumerate(data):
             search_list.insert(index, key)
-            print(index)
+            search_list_del.insert(index, key)
+
+
+def delete_item():
+    if search_list_del.size() != 0:
+        del_item = search_list_del.get(ANCHOR)
+        res = messagebox.askquestion(title="Confirm...", message=f"Are you sure you what to delete {del_item}")
+        if res == "yes":
+            if del_item == "":
+                messagebox.showinfo(title="Selection required...", message="Please from the list below")
+            else:
+                with open("data.json", mode="r") as file:
+                    data = json.load(file)
+                    del data[del_item]
+                with open("data.json", mode="w") as file:
+                    json.dump(data, file, indent=4)
+                    messagebox.showinfo("Info", f"{del_item} deleted")
+                load_list_box()
 
 
 # ---------------------------- PASSWORD GENERATOR ------------------------------- #
@@ -84,7 +106,6 @@ def append_data_to_file():
                                                          "Click Yes to overwrite.\n"
                                                          "Or Cancel to cancel.")
                     if res == FALSE:
-                        print(res)
                         return
                 data.update(new_data)
                 with open("data.json", mode="w") as file:
@@ -102,33 +123,36 @@ def append_data_to_file():
 
 
 def get_data():
-    search_value = search_list.get(ANCHOR)
-    search_value_lower = search_list.get(ANCHOR).lower()
+    if search_list.size() != 0:
+        search_value = search_list.get(ANCHOR)
+        search_value_lower = search_list.get(ANCHOR).lower()
 
-    if search_value_lower == "":
-        messagebox.showinfo(title="Selection required...", message="Please from the list below")
-    else:
-        try:
-            with open("data.json", mode="r") as file:
-                data = json.load(file)
-                try:
-                    conversion = {x.lower(): y for x, y in data.items()}
-                    result = conversion[search_value_lower]
-                except KeyError:
-                    messagebox.showerror("Not Found", message=f"{search_value} not found")
-                else:
+        if search_value_lower == "":
+            messagebox.showinfo(title="Selection required...", message="Please from the list below")
+        else:
+            try:
+                with open("data.json", mode="r") as file:
+                    data = json.load(file)
+                    try:
+                        conversion = {x.lower(): y for x, y in data.items()}
+                        result = conversion[search_value_lower]
+                    except KeyError:
+                        messagebox.showerror("Not Found", message=f"{search_value} not found")
+                    else:
 
-                    email = result["email"]
-                    password = result["password"]
-                    entry_email_uname_search.delete(0, END)
-                    entry_email_uname_search.insert(0, email)
-                    entry_password_search.config(state='normal')
-                    entry_password_search.delete(0, END)
-                    entry_password_search.insert(0, password)
-                    pyperclip.copy(password)
+                        email = result["email"]
+                        password = result["password"]
+                        entry_website_search.delete(0, END)
+                        entry_website_search.insert(0, search_value)
+                        entry_email_uname_search.delete(0, END)
+                        entry_email_uname_search.insert(0, email)
+                        entry_password_search.config(state='normal')
+                        entry_password_search.delete(0, END)
+                        entry_password_search.insert(0, password)
+                        pyperclip.copy(password)
 
-        except FileNotFoundError:
-            messagebox.showerror(title="Data file Err", message="Data file not found")
+            except FileNotFoundError:
+                messagebox.showerror(title="Data file Err", message="Data file not found")
 
 # ---------------------------- EXPORT DATA ------------------------------- #
 
@@ -155,7 +179,6 @@ def import_data():
 
     res = messagebox.askokcancel(title="Confirm", message="This action will overwrite all previous data")
     if res:
-        print("ok")
         file_name = askopenfilename(title="Select Import File", filetypes=[("json files", '*.json')])
         if file_name:
             with open(file_name) as file:
@@ -163,6 +186,12 @@ def import_data():
             with open("data.json", mode="w") as file:
                 json.dump(data, file)
                 messagebox.showinfo(title="Success...", message="Import complete")
+
+
+def clear_search():
+    entry_website_search.delete(0, END)
+    entry_password_search.delete(0, END)
+    entry_email_uname_search.delete(0, END)
 # ---------------------------- UI SETUP ------------------------------- #
 
 
@@ -181,12 +210,12 @@ my_frame3.grid(row=0, column=0, sticky="nsew")
 
 my_notebook.add(my_frame1, text="Add")
 my_notebook.add(my_frame2, text="Search")
-my_notebook.add(my_frame3, text="Import/Export")
+my_notebook.add(my_frame3, text="Import/Export/Delete")
 
 # ---------------------------- Frame/TAB1/ADD ------------------------------- #
 canvas = Canvas(my_frame1, width=200, height=200)
 icon_img = PhotoImage(file="logo.png")
-canvas.create_image(100, 100, image=icon_img)
+canvas.create_image(120, 100, image=icon_img)
 canvas.grid(column=1, row=0, sticky="EW")
 
 label_website = Label(my_frame1, text="Website:")
@@ -218,15 +247,15 @@ add_btn.grid(column=1, row=4, columnspan=2, sticky="EW")
 # ---------------------------- Frame/TAB2/SEARCH ------------------------------- #
 canvas2 = Canvas(my_frame2, width=200, height=200)
 tomato_img2 = PhotoImage(file="logo.png")
-canvas2.create_image(100, 100, image=icon_img)
+canvas2.create_image(120, 100, image=icon_img)
 canvas2.grid(column=1, row=0, sticky="EW")
 
 label_website_search = Label(my_frame2, text="Website:")
 label_website_search.grid(column=0, row=1, sticky="E")
 
 entry_website_search = Entry(my_frame2)
-entry_website_search.focus()
 entry_website_search.grid(column=1, row=1, columnspan=2, sticky="EW")
+entry_website_search.bind("<Key>", lambda e: "break")
 
 label_email_uname_search = Label(my_frame2, text="Email/Username:")
 label_email_uname_search.grid(column=0, row=2, sticky="E")
@@ -244,29 +273,42 @@ entry_password_search.bind("<Key>", lambda e: "break")
 
 search_btn = Button(my_frame2, text="Search", cursor="hand2", command=get_data, width=44)
 search_btn.grid(column=1, row=4, sticky="EW", columnspan=2, pady=8)
+clear_btn = Button(my_frame2, text="Clear", cursor="hand2", command=clear_search, width=44)
+clear_btn.grid(column=1, row=5, sticky="EW", columnspan=2, pady=(0, 8))
 
 scrollbar = Scrollbar(my_frame2)
-scrollbar.grid(row=5, column=2, sticky="W")
+scrollbar.grid(row=6, column=3, sticky="WNS")
 search_list = Listbox(my_frame2, height=4, selectmode=SINGLE, yscrollcommand=True)
-search_list.grid(row=5, column=1, sticky="EW")
+search_list.grid(row=6, column=1, sticky="EW", columnspan=2)
 search_list.config(yscrollcommand=scrollbar.set)
 scrollbar.config(command=search_list.yview)
 
-load_list_box()
 
 # ---------------------------- Frame/TAB3/IMPORT/EXPORT ------------------------------- #
 
+
 canvas3 = Canvas(my_frame3, width=200, height=200)
 tomato_img3 = PhotoImage(file="logo.png")
-canvas3.create_image(100, 100, image=icon_img)
-canvas3.place(x=95, y=1)
+canvas3.create_image(150, 100, image=icon_img)
+canvas3.grid(column=1, row=0, sticky="EW")
 
+scrollbar_del = Scrollbar(my_frame3)
+scrollbar_del.grid(row=2, column=2, sticky="wns", pady=20)
+search_list_del = Listbox(my_frame3, height=4, selectmode=SINGLE, yscrollcommand=True, width=50)
+search_list_del.grid(row=2, column=1, pady=20, sticky="EW")
+search_list_del.config(yscrollcommand=scrollbar_del.set)
+scrollbar_del.config(command=search_list_del.yview)
 
 export_btn = Button(my_frame3, text="Export", cursor="hand2", command=export, width=8)
-export_btn.grid(row=1, column=0, pady=10)
+export_btn.grid(row=1, column=0, sticky="E")
 
 import_btn = Button(my_frame3, text="Import", cursor="hand2", command=import_data, width=8)
-import_btn.grid(row=2, column=0)
+import_btn.grid(row=1, column=1,)
+
+del_btn = Button(my_frame3, text="Delete", cursor="hand2", command=delete_item, width=8)
+del_btn.grid(row=1, column=2, sticky="W")
+
+load_list_box()
 
 window.resizable(False, False)
 
