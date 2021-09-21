@@ -118,7 +118,7 @@ def get_data():
 
 def export():
     confirm = messagebox.askyesno(title="Confirm", message="Are you sure you want to export")
-    print(confirm)
+
     if confirm:
         folder_name = askdirectory()
         file_name = datetime.now().strftime("%d/%m/%Y %H:%M:%S").replace("/", ".").replace(":", ".")
