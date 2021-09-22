@@ -32,7 +32,7 @@ def delete_item():
         res = messagebox.askquestion(title="Confirm...", message=f"Are you sure you what to delete {del_item}")
         if res == "yes":
             if del_item == "":
-                messagebox.showinfo(title="Selection required...", message="Please from the list below")
+                messagebox.showinfo(title="Selection required...", message="Please select from the list below")
             else:
                 with open("data.json", mode="r") as file:
                     data = json.load(file)
@@ -133,7 +133,7 @@ def get_data():
         search_value_lower = search_list.get(ANCHOR).lower()
 
         if search_value_lower == "":
-            messagebox.showinfo(title="Selection required...", message="Please from the list below")
+            messagebox.showinfo(title="Selection required...", message="Please select from the list below")
         else:
             try:
                 with open("data.json", mode="r") as file:
