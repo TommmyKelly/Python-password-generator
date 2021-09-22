@@ -7,6 +7,9 @@ import pyperclip
 import json
 from json.decoder import JSONDecodeError
 from datetime import datetime
+from security import Security
+
+sec = Security()
 
 
 def load_list_box():
@@ -73,11 +76,13 @@ def append_data_to_file():
     website = entry_website.get().lower()
     email = entry_email_uname.get()
     password = entry_password.get()
+    encrypt_email = f"'{sec.encrypt(entry_email_uname.get())}"
+    encrypt_password = f"'{sec.encrypt(entry_password.get())}"
 
     new_data = {
         website: {
-            "email": email,
-            "password": password
+            "email": encrypt_email,
+            "password": encrypt_password
         }
     }
     if len(website) == 0 or len(email) == 0 or len(password) == 0:
@@ -140,8 +145,8 @@ def get_data():
                         messagebox.showerror("Not Found", message=f"{search_value} not found")
                     else:
 
-                        email = result["email"]
-                        password = result["password"]
+                        email = sec.decrypt(result["email"])
+                        password = sec.decrypt(result["password"])
                         entry_website_search.delete(0, END)
                         entry_website_search.insert(0, search_value)
                         entry_email_uname_search.delete(0, END)
