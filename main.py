@@ -8,6 +8,7 @@ import json
 from json.decoder import JSONDecodeError
 from datetime import datetime
 from security import Security
+import sys
 
 sec = Security()
 
@@ -200,20 +201,26 @@ def clear_search():
     entry_email_uname_search.delete(0, END)
 # ---------------------------- UI SETUP ------------------------------- #
 
+
+def exit_script():
+    sys.exit()
+
+
 def check_password():
     password = password_entry.get()
     if password == "your_password_here":
         # Password is correct, open the application
-        password_window.deiconify()  # Show the main application window
         password_window.destroy()  # Close the password window
     else:
         # Password is incorrect, show an error message
         messagebox.showerror("Incorrect Password", "The password you entered is incorrect.")
 
+
 password_window = Tk()
 password_window.title("Password")
 password_window.geometry("300x100")
 password_window.resizable(False, False)
+password_window.protocol("WM_DELETE_WINDOW", exit_script)
 
 password_label = Label(password_window, text="Enter Password:")
 password_label.pack()
@@ -346,4 +353,4 @@ load_list_box()
 
 window.resizable(False, False)
 
-mainloop()
+window.mainloop()
