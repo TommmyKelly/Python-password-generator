@@ -200,6 +200,34 @@ def clear_search():
     entry_email_uname_search.delete(0, END)
 # ---------------------------- UI SETUP ------------------------------- #
 
+def check_password():
+    password = password_entry.get()
+    if password == "your_password_here":
+        # Password is correct, open the application
+        password_window.deiconify()  # Show the main application window
+        password_window.destroy()  # Close the password window
+    else:
+        # Password is incorrect, show an error message
+        messagebox.showerror("Incorrect Password", "The password you entered is incorrect.")
+
+password_window = Tk()
+password_window.title("Password")
+password_window.geometry("300x100")
+password_window.resizable(False, False)
+
+password_label = Label(password_window, text="Enter Password:")
+password_label.pack()
+
+password_entry = Entry(password_window, show="*")  # Use "show" to hide the password
+password_entry.pack()
+
+password_button = Button(password_window, text="Submit", command=check_password)
+password_button.pack()
+
+password_window.mainloop()
+
+
+# ====================================================================== #
 
 window = Tk()
 window.title("Password Generator")
